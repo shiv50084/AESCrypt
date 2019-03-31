@@ -949,6 +949,7 @@ int main(int argc, char *argv[])
     FILE *outfp = NULL;
     encryptmode_t mode=UNINIT;
     char *infile = NULL;
+    size_t infile_len;
     unsigned char pass[MAX_PASSWD_BUF];
     int file_count = 0;
     char outfile[1024];
@@ -1192,9 +1193,17 @@ int main(int argc, char *argv[])
         {
             if (outfp == NULL)
             {
-                /* assume .aes extension */
-                strncpy(outfile, infile, strlen(infile)-4);
-                outfile[strlen(infile)-4] = '\0';
+                /* input file name must have .aes extension */
+                infile_len = strlen(infile);
+                if (infile_len < 5 || strcmp(infile + infile_len - 4, ".aes"))
+                {
+                    fprintf(stderr, "Error: Cannot determine output file name from %s\n", infile);
+                    memset_secure(pass, 0, MAX_PASSWD_BUF);
+                    return -1;
+                }
+                /* remove .aes extension for output file name */
+                strncpy(outfile, infile, infile_len-4);
+                outfile[infile_len-4] = '\0';
                 if ((outfp = fopen(outfile, "w")) == NULL)
                 {
                     if ((infp != stdin) && (infp != NULL))
