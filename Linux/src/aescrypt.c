@@ -956,7 +956,7 @@ int main(int argc, char *argv[])
     int password_acquired = 0;
 
     /* Initialize the output filename */
-    outfile[0] = '\0';
+    outfile[0] = outfile[sizeof(outfile) - 1] = '\0';
     
     while ((rc = getopt(argc, argv, "vhdek:p:o:")) != -1)
     {
@@ -1047,8 +1047,7 @@ int main(int argc, char *argv[])
                     cleanup(outfile);
                     return -1;
                 }
-                strncpy(outfile, optarg, 1024);
-                outfile[1023] = '\0';
+                strncpy(outfile, optarg, sizeof(outfile) - 1);
                 break;
             default:
                 fprintf(stderr, "Error: Unknown option '%c'\n", rc);
@@ -1171,7 +1170,7 @@ int main(int argc, char *argv[])
         {
             if (outfp == NULL)
             {
-                snprintf(outfile, 1024, "%s.aes", infile);
+                snprintf(outfile, sizeof(outfile), "%s.aes", infile);
                 if ((outfp = fopen(outfile, "w")) == NULL)
                 {
                     if ((infp != stdin) && (infp != NULL))
@@ -1202,8 +1201,7 @@ int main(int argc, char *argv[])
                     return -1;
                 }
                 /* remove .aes extension for output file name */
-                strncpy(outfile, infile, infile_len-4);
-                outfile[infile_len-4] = '\0';
+                strncpy(outfile, infile, sizeof(outfile) - 1);
                 if ((outfp = fopen(outfile, "w")) == NULL)
                 {
                     if ((infp != stdin) && (infp != NULL))
@@ -1253,7 +1251,7 @@ int main(int argc, char *argv[])
         }
 
         /* Reset input/output file names and desriptors */
-        outfile[0] = '\0';
+        outfile[0] = outfile[sizeof(outfile) - 1] = '\0';
         infp = NULL;
         outfp = NULL;
     }
